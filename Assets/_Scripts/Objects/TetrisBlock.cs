@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,12 +6,12 @@ using UnityEngine;
 public class TetrisBlock : MonoBehaviour
 {
     [SerializeField] private BlockColorsSO blockColorsSO;
+
     private List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
 
     private void Start()
     {
         SetupSpriteRendererColors();
-
     }
 
     private void SetupSpriteRendererColors()
@@ -24,5 +25,16 @@ public class TetrisBlock : MonoBehaviour
                 spriteRenderers.Add(spriteRenderer);
             }
         }
+    }
+    public void SetColor(Color color)
+    {
+        foreach (SpriteRenderer sr in spriteRenderers)
+        {
+            sr.color = color;
+        }
+    }
+    public Color GetColor()
+    {
+        return spriteRenderers[0].color;
     }
 }

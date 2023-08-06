@@ -15,8 +15,14 @@ public class GameGrid : MonoBehaviour
     [SerializeField] private Vector2 startPos = Vector2.zero;
     [SerializeField] private Vector2 localSpawnPoint = Vector2.zero;
 
+    [SerializeField] public TetrisBlocksSO tetrisBlocks;
+    [SerializeField] private GameObject dummy;
+
     private Vector2[,] gridCoords;
-    private Vector2 BlockTransformPos => transform.TransformPoint(localSpawnPoint);
+    private Vector2 BlockSpawnPos => transform.TransformPoint(localSpawnPoint);
+    private Vector2 GridStartPos => transform.TransformPoint(startPos);
+    public float CellWidth => cellWidth;
+    public float CellHeight => cellHeight;
 
     private void Start()
     {
@@ -26,7 +32,7 @@ public class GameGrid : MonoBehaviour
     private void SetupGrid()
     {
         gridCoords = new Vector2[cellSizeX, cellSizeY];
-        Vector2 localStarPos = transform.TransformPoint(startPos);
+        Vector2 localStarPos = GridStartPos;
 
         for (int i = 0; i < cellSizeX; i++)
         {
@@ -38,8 +44,247 @@ public class GameGrid : MonoBehaviour
 
         OnGridReady?.Invoke();
     }
+    public bool IsSpawnAreaValid()
+    {
 
+        return true;
+    }
 
+    public void RotateBlockInGrid(TetrisBlock block)
+    {
+        List<Vector2Int> rotatedBlockIndexList = GetRotatedBlockIndexList(block);
+        int blockOffset = CheckRotatedBlockOffset(rotatedBlockIndexList);
+        if (blockOffset != 0)
+        {
+            rotatedBlockIndexList = ApplyOffset(rotatedBlockIndexList, blockOffset);
+        }
+
+        if (RotationIsPossible(block, rotatedBlockIndexList) == false) return;
+
+        int childIndex = 0;
+        foreach (Transform child in block.transform)
+        {
+            Vector2Int indexVector = rotatedBlockIndexList[childIndex++];
+            child.position = GetPositionFromIndexVector(indexVector);
+        }
+    }
+
+    private bool RotationIsPossible(TetrisBlock block, List<Vector2Int> rotatedBlockIndexList)
+    {
+        foreach (Vector2Int indexVector in rotatedBlockIndexList)
+        {
+            if (indexVector.x < 0 || indexVector.x >= cellSizeX || indexVector.y < 0 || indexVector.y >= cellSizeY) return false;
+
+            Vector2 pos = GetPositionFromIndexVector(indexVector);
+            if (IsEmpty(pos, block) == false) return false;
+        }
+        return true;
+    }
+
+    private int CheckRotatedBlockOffset(List<Vector2Int> rotatedBlockIndexList)
+    {
+        int maxRightOffset = 0;
+        int maxLeftOffset = 0;
+        int leftOffset = 0;
+        int rightOffset = 0;
+
+        foreach (Vector2Int indexVector in rotatedBlockIndexList)
+        {
+            if (indexVector.x >= cellSizeX)
+            {
+                rightOffset = Mathf.RoundToInt(indexVector.x) - cellSizeX + 1;
+            }
+            else if (indexVector.x < 0)
+            {
+                leftOffset = Mathf.RoundToInt(indexVector.x) * -1;
+            }
+            maxRightOffset = maxRightOffset > rightOffset ? maxRightOffset : rightOffset;
+            maxLeftOffset = maxLeftOffset > leftOffset ? maxLeftOffset : leftOffset;
+        }
+
+        if (maxRightOffset == 0) return -maxLeftOffset;
+        return maxRightOffset;
+    }
+    private List<Vector2Int> ApplyOffset(List<Vector2Int> rotatedBlockIndexList, int offset)
+    {
+        for (int i = 0; i < rotatedBlockIndexList.Count; i++)
+        {
+            rotatedBlockIndexList[i] -= new Vector2Int(1,0) * offset;
+        }
+        return rotatedBlockIndexList;
+    }
+    public List<Vector2Int> GetRotatedBlockIndexList(TetrisBlock block)
+    {
+        List<Vector2Int> rotatedBlockIndexList = new List<Vector2Int>();
+        Vector2Int referenceIndexVector = GetIndexFromPosition(block.transform.position);
+
+        foreach (Transform child in block.transform)
+        {
+            Vector2Int indexVector = GetIndexFromPosition(child.position);
+            rotatedBlockIndexList.Add(RotateIndex90Degree(referenceIndexVector, indexVector));
+        }
+        return rotatedBlockIndexList;
+    }
+
+    public bool IsDownValid(TetrisBlock block)
+    {
+        Vector2 dir = new Vector2(0, -1);
+        return CheckDirection(block, dir);
+    }
+    public bool IsLeftValid(TetrisBlock block)
+    {
+        Vector2 dir = new Vector2(-1, 0);
+        return CheckDirection(block, dir);
+    }
+    public bool IsRightValid(TetrisBlock block)
+    {
+        Vector2 dir = new Vector2(1, 0);
+        return CheckDirection(block, dir);
+    }
+
+    private bool CheckDirection(TetrisBlock block, Vector2 dir)
+    {
+        foreach (Transform child in block.transform)
+        {
+            Vector2 indexVector = GetIndexFromPosition(child.position);
+            int i = (int)indexVector.x + (int)dir.x;
+            int j = (int)indexVector.y + (int)dir.y;
+
+            if (i < 0 || i >= cellSizeX || j < 0 || j >= cellSizeY)
+            {
+                return false;
+            }
+
+            Vector2 nextPos = gridCoords[i, j];
+            if (IsEmpty(nextPos, block) == false) return false;
+        }
+
+        return true;
+    }
+    private bool IsEmpty(Vector2 pos, TetrisBlock block)
+    {
+        Collider2D coll = Physics2D.OverlapBox(pos, Vector2.one * 0.1f, 0);
+        if (coll != null && coll.transform.parent != block.transform)
+        {
+            return false;
+        }
+        else return true;
+    }
+    private bool IsFilled(Vector2 pos, out Transform result)
+    {
+        Collider2D coll = Physics2D.OverlapBox(pos, Vector2.one * 0.1f, 0);
+        if (coll != null)
+        {
+            result = coll.transform;
+            return true;
+        }
+        else
+        {
+            Instantiate(dummy,pos,Quaternion.identity);
+            result = null;
+            return false;
+        }
+    }
+    private Vector2Int RotateIndex90Degree(Vector2Int referencePoint, Vector2Int pointToRotate)
+    {
+        int deltaX = pointToRotate.x - referencePoint.x;
+        int deltaY = pointToRotate.y - referencePoint.y;
+
+        int new_x = referencePoint.x - deltaY;
+        int new_y = referencePoint.y + deltaX;
+
+        return new Vector2Int(new_x, new_y);
+    }
+
+    private Vector2Int GetIndexFromPosition(Vector2 pos)
+    {
+        Vector2Int indexVector = new Vector2Int(Mathf.RoundToInt((pos.x - GridStartPos.x) / cellWidth), Mathf.RoundToInt((pos.y - GridStartPos.y) / cellHeight));
+        return indexVector;
+    }
+    private Vector2 GetPositionFromIndexVector(Vector2Int indexVector)
+    {
+        return gridCoords[Mathf.RoundToInt(indexVector.x), Mathf.RoundToInt(indexVector.y)];
+    }
+    public TetrisBlock SpawnTetrisBlock()
+    {
+        TetrisBlock block = tetrisBlocks.GetRandomBlock();
+        TetrisBlock spawnedBlock = Instantiate(block, BlockSpawnPos, Quaternion.identity);
+        spawnedBlock.transform.SetParent(transform);
+        return spawnedBlock;
+    }
+    public void HandleCompletedRows(TetrisBlock block)
+    {
+        StartCoroutine(HandleRows(block));
+    }
+    private IEnumerator HandleRows(TetrisBlock block)
+    {
+        Transform[] children = new Transform[block.transform.childCount];
+        for (int i = 0; i < block.transform.childCount; i++)
+        {
+            children[i] = block.transform.GetChild(i);
+        }
+        foreach (Transform child in children)
+        {
+            if (child == null) continue;
+
+            int j = GetIndexFromPosition(child.position).y;
+
+            if (CheckRow(j, out List<Transform> resultList))
+            {
+                DestroyRow(resultList);
+                yield return new WaitForFixedUpdate();
+                yield return new WaitForFixedUpdate();
+                yield return new WaitForFixedUpdate();
+            }
+        }
+    }
+
+    private void DestroyRow(List<Transform> resultList)
+    {
+        int rowIndex = GetIndexFromPosition(resultList[0].position).y;
+        foreach (Transform singleBlock in resultList)
+        {
+            Destroy(singleBlock.gameObject);
+        }
+        ShiftGridDownByOne(rowIndex);
+    }
+
+    private void ShiftGridDownByOne(int rowIndex)
+    {
+        Vector2 pointA = GetPositionFromIndexVector(new Vector2Int(0, rowIndex + 1));
+        Vector2 pointB = GetPositionFromIndexVector(new Vector2Int(cellSizeX - 1, cellSizeY - 1));
+
+        Collider2D[] allBlocks = Physics2D.OverlapAreaAll(pointA, pointB);
+
+        foreach (Collider2D coll in allBlocks)
+        {
+            coll.transform.Translate(Vector2.down * cellHeight, Space.World);
+        }
+    }
+
+    private bool CheckRow(int j, out List<Transform> resultList)
+    {
+        resultList = new List<Transform>();
+
+        for (int i = 0; i < cellSizeX; i++)
+        {
+            Vector2Int currentIndexVector = new Vector2Int(i, j);
+            if (IsFilled(GetPositionFromIndexVector(currentIndexVector), out Transform result))
+            {
+                resultList.Add(result);
+            }
+            else
+            {
+                if(resultList.Count > 8)
+                Debug.Log($"This Index Is null or empty: {currentIndexVector}");
+            }
+        }
+        if (resultList.Count == cellSizeX)
+        {
+            return true;
+        }
+        else return false;
+    }
     private void OnDrawGizmos()
     {
         if (gridCoords == null) return;

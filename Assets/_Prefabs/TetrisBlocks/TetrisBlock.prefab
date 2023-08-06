@@ -45,3 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockColorsSO: {fileID: 11400000, guid: f5359921e6a26744ea38f23dd1747cab, type: 2}
+  horizontalMoveSpeed: 1
+  verticalMoveSpeed: 1
