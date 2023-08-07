@@ -6,10 +6,11 @@ using UnityEngine;
 public class TetrisBlock : MonoBehaviour
 {
     [SerializeField] private BlockColorsSO blockColorsSO;
+    [SerializeField] private Sprite previewImage;
 
     private List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
 
-    private void Start()
+    private void Awake()
     {
         SetupSpriteRendererColors();
     }
@@ -36,5 +37,9 @@ public class TetrisBlock : MonoBehaviour
     public Color GetColor()
     {
         return spriteRenderers[0].color;
+    }
+    public Sprite GetPreviewImage()
+    {
+        return previewImage;
     }
 }

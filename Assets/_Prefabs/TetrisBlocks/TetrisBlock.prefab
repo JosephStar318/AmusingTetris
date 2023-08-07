@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1788547502504902422}
   - component: {fileID: 2160726298093036506}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TetrisBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,5 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockColorsSO: {fileID: 11400000, guid: f5359921e6a26744ea38f23dd1747cab, type: 2}
-  horizontalMoveSpeed: 1
-  verticalMoveSpeed: 1
+  previewImage: {fileID: 0}

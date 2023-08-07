@@ -6,6 +6,9 @@ using UnityEngine;
 public class GameGrid : MonoBehaviour
 {
     public static event Action OnGridReady;
+    public static event Action<TetrisBlock> OnPreviewChanged;
+
+    public static event Action OnRowsHandled;
 
     [SerializeField] private float cellWidth;
     [SerializeField] private float cellHeight;
@@ -17,6 +20,9 @@ public class GameGrid : MonoBehaviour
 
     [SerializeField] public TetrisBlocksSO tetrisBlocks;
     [SerializeField] private GameObject dummy;
+    [SerializeField] private LayerMask blockLayer;
+    private Color previewBlockColor;
+    private TetrisBlock previewBlock;
 
     private Vector2[,] gridCoords;
     private Vector2 BlockSpawnPos => transform.TransformPoint(localSpawnPoint);
@@ -46,7 +52,14 @@ public class GameGrid : MonoBehaviour
     }
     public bool IsSpawnAreaValid()
     {
-
+        if(previewBlock != null)
+        {
+            foreach (Transform child in previewBlock.transform)
+            {
+                Collider2D coll = Physics2D.OverlapBox(child.position, Vector2.one * 0.1f, 0, blockLayer);
+                if (coll != null) return false;
+            }
+        }
         return true;
     }
 
@@ -207,17 +220,45 @@ public class GameGrid : MonoBehaviour
     }
     public TetrisBlock SpawnTetrisBlock()
     {
+        if (previewBlock == null)
+        {
+            SetupPreview();
+
+            TetrisBlock block = tetrisBlocks.GetRandomBlock();
+            TetrisBlock spawnedBlock = Instantiate(block, BlockSpawnPos, Quaternion.identity);
+            spawnedBlock.transform.SetParent(transform);
+            return spawnedBlock;
+        }
+        else
+        {
+            TetrisBlock spawnedBlock = previewBlock;
+            spawnedBlock.gameObject.SetActive(true);
+            SetupPreview();
+
+            return spawnedBlock;
+        }
+       
+    }
+
+    private void SetupPreview()
+    {
         TetrisBlock block = tetrisBlocks.GetRandomBlock();
         TetrisBlock spawnedBlock = Instantiate(block, BlockSpawnPos, Quaternion.identity);
         spawnedBlock.transform.SetParent(transform);
-        return spawnedBlock;
+        previewBlock = spawnedBlock;
+        previewBlock.gameObject.SetActive(false);
+        OnPreviewChanged?.Invoke(previewBlock);
     }
+
     public void HandleCompletedRows(TetrisBlock block)
     {
         StartCoroutine(HandleRows(block));
     }
     private IEnumerator HandleRows(TetrisBlock block)
     {
+        List<List<Transform>> completedRowList = new List<List<Transform>>();
+        List<int> completedRowIndexes = new List<int>();
+
         Transform[] children = new Transform[block.transform.childCount];
         for (int i = 0; i < block.transform.childCount; i++)
         {
@@ -228,15 +269,47 @@ public class GameGrid : MonoBehaviour
             if (child == null) continue;
 
             int j = GetIndexFromPosition(child.position).y;
+            if (completedRowIndexes.Contains(j)) continue;
+            completedRowIndexes.Add(j);
 
-            if (CheckRow(j, out List<Transform> resultList))
+            if (j >= 0 && j < cellSizeY)
             {
-                DestroyRow(resultList);
-                yield return new WaitForFixedUpdate();
-                yield return new WaitForFixedUpdate();
-                yield return new WaitForFixedUpdate();
+                if (CheckRow(j, out List<Transform> resultList))
+                {
+                    completedRowList.Add(resultList);
+                }
             }
         }
+
+        if (completedRowList.Count == 1)
+        {
+            DestroyRow(completedRowList[0]);
+        }
+        else if(completedRowList.Count == 2)
+        {
+            DestroyRow(completedRowList[0]);
+            yield return new WaitForFixedUpdate();
+            DestroyRow(completedRowList[1]);
+        }
+        else if(completedRowList.Count == 3)
+        {
+            DestroyRow(completedRowList[0]);
+            yield return new WaitForFixedUpdate();
+            DestroyRow(completedRowList[1]);
+            yield return new WaitForFixedUpdate();
+            DestroyRow(completedRowList[2]);
+        }
+        else if(completedRowList.Count == 4)
+        {
+            DestroyRow(completedRowList[0]);
+            yield return new WaitForFixedUpdate();
+            DestroyRow(completedRowList[1]);
+            yield return new WaitForFixedUpdate();
+            DestroyRow(completedRowList[2]);
+            yield return new WaitForFixedUpdate();
+            DestroyRow(completedRowList[3]);
+        }
+        OnRowsHandled?.Invoke();
     }
 
     private void DestroyRow(List<Transform> resultList)

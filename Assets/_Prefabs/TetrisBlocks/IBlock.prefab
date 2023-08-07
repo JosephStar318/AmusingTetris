@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8970836569019545639}
   - component: {fileID: 3310232024099319313}
   - component: {fileID: 6519374033007385612}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Single Block
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 5255943750787038359}
   - component: {fileID: 7958922853736377770}
   - component: {fileID: 2155196785945405408}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Single Block (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -271,7 +271,7 @@ GameObject:
   - component: {fileID: 8708946444193376509}
   - component: {fileID: 5006637213774792156}
   - component: {fileID: 2138902953403244655}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Single Block (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -401,7 +401,7 @@ GameObject:
   - component: {fileID: 4763356324251213029}
   - component: {fileID: 920349381043337707}
   - component: {fileID: 5972448278705779997}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Single Block (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -568,6 +568,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2160726298093036506, guid: 00bc7028ba11999489af4833e42951f0, type: 3}
+      propertyPath: previewImage
+      value: 
+      objectReference: {fileID: 21300000, guid: 4f26616a3efbabb42b3143f93e0524c8, type: 3}
     - target: {fileID: 5464274604594637856, guid: 00bc7028ba11999489af4833e42951f0, type: 3}
       propertyPath: m_Name
       value: IBlock

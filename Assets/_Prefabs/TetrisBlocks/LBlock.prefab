@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5028398155475043999}
   - component: {fileID: 1587914295071722917}
   - component: {fileID: 7306543953121855502}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Single Block (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 588284383599190964}
   - component: {fileID: 2267530781202768785}
   - component: {fileID: 1343468467612286935}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Single Block (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -271,7 +271,7 @@ GameObject:
   - component: {fileID: 5782810247427715639}
   - component: {fileID: 4663595688280057870}
   - component: {fileID: 159318489093616233}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Single Block
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -401,7 +401,7 @@ GameObject:
   - component: {fileID: 8451888477062744048}
   - component: {fileID: 5688247669473525805}
   - component: {fileID: 689299481375998396}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Single Block (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -568,9 +568,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2160726298093036506, guid: 00bc7028ba11999489af4833e42951f0, type: 3}
+      propertyPath: previewImage
+      value: 
+      objectReference: {fileID: 21300000, guid: e7a6177a9a37fd74d96ac921cd32e43b, type: 3}
     - target: {fileID: 5464274604594637856, guid: 00bc7028ba11999489af4833e42951f0, type: 3}
       propertyPath: m_Name
-      value: L2Block
+      value: LBlock
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

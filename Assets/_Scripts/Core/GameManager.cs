@@ -23,10 +23,13 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         PlayerInputHelper.OnRotate += PlayerInputHelper_OnRotate;
+        GameGrid.OnRowsHandled += GameGrid_OnRowsHandled;
     }
+
     private void OnDisable()
     {
         PlayerInputHelper.OnRotate -= PlayerInputHelper_OnRotate;
+        GameGrid.OnRowsHandled -= GameGrid_OnRowsHandled;
     }
 
     private void Start()
@@ -46,6 +49,7 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.Log("Game Over");
+            activeTetrisBlock = null;
             OnGameOver?.Invoke();
         }
     }
@@ -69,8 +73,10 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            grid.HandleCompletedRows(activeTetrisBlock);
-            SpawnTetrisBlock();
+            Debug.Log("HANDLE ROWS");
+            TetrisBlock temp = activeTetrisBlock;
+            activeTetrisBlock = null;
+            grid.HandleCompletedRows(temp);
         }
     }
     private void PlayerMovementControl()
@@ -104,6 +110,12 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    private void GameGrid_OnRowsHandled()
+    {
+        SpawnTetrisBlock();
+    }
+
     private void PlayerInputHelper_OnRotate()
     {
         if (activeTetrisBlock == null) return;
