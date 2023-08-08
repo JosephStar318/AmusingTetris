@@ -9,6 +9,7 @@ public class GameGrid : MonoBehaviour
     public static event Action<TetrisBlock> OnPreviewChanged;
 
     public static event Action OnRowsHandled;
+    public static event Action<int> OnRowCleared;
 
     [SerializeField] private float cellWidth;
     [SerializeField] private float cellHeight;
@@ -19,7 +20,6 @@ public class GameGrid : MonoBehaviour
     [SerializeField] private Vector2 localSpawnPoint = Vector2.zero;
 
     [SerializeField] public TetrisBlocksSO tetrisBlocks;
-    [SerializeField] private GameObject dummy;
     [SerializeField] private LayerMask blockLayer;
     private Color previewBlockColor;
     private TetrisBlock previewBlock;
@@ -193,7 +193,6 @@ public class GameGrid : MonoBehaviour
         }
         else
         {
-            Instantiate(dummy,pos,Quaternion.identity);
             result = null;
             return false;
         }
@@ -284,12 +283,14 @@ public class GameGrid : MonoBehaviour
         if (completedRowList.Count == 1)
         {
             DestroyRow(completedRowList[0]);
+            OnRowCleared?.Invoke(1);
         }
         else if(completedRowList.Count == 2)
         {
             DestroyRow(completedRowList[0]);
             yield return new WaitForFixedUpdate();
             DestroyRow(completedRowList[1]);
+            OnRowCleared?.Invoke(2);
         }
         else if(completedRowList.Count == 3)
         {
@@ -298,6 +299,7 @@ public class GameGrid : MonoBehaviour
             DestroyRow(completedRowList[1]);
             yield return new WaitForFixedUpdate();
             DestroyRow(completedRowList[2]);
+            OnRowCleared?.Invoke(3);
         }
         else if(completedRowList.Count == 4)
         {
@@ -308,6 +310,7 @@ public class GameGrid : MonoBehaviour
             DestroyRow(completedRowList[2]);
             yield return new WaitForFixedUpdate();
             DestroyRow(completedRowList[3]);
+            OnRowCleared?.Invoke(4);
         }
         OnRowsHandled?.Invoke();
     }

@@ -122,17 +122,17 @@ public class AudioUtility
     {
         if (s_AudioManager == null) s_AudioManager = GameObject.FindObjectOfType<AudioManager>();
 
-        if (value <= 0)
-            value = 0.001f;
-        float valueInDb = Mathf.Log10(value) * 20;
+        float clampedVal = Mathf.InverseLerp(100, 0, value);
+        clampedVal *= -80f;
 
-        s_AudioManager.SetFloat("MasterVolume", valueInDb);
+        s_AudioManager.SetFloat("MasterVolume", clampedVal);
     }
     public static float GetMasterVolume()
     {
         if (s_AudioManager == null) s_AudioManager = GameObject.FindObjectOfType<AudioManager>();
 
-        s_AudioManager.GetFloat("MasterVolume", out var valueInDb);
-        return Mathf.Pow(10f, valueInDb / 20.0f);
+        s_AudioManager.GetFloat("MasterVolume", out var val);
+        float transformedVal = 100 - ((val / -80f) * 100f);
+        return transformedVal;
     }
 }

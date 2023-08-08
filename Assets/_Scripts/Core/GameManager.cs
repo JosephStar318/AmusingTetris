@@ -6,6 +6,10 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static event Action OnGameOver;
+    public static event Action OnGamePaused;
+    public static event Action OnGameUnPaused;
+    public static event Action OnRemoveAdsBtnPressed;
+    public static event Action OnSettingsBtnPressed;
 
     [SerializeField] private GameGrid grid;
 
@@ -17,19 +21,22 @@ public class GameManager : MonoBehaviour
 
     private TetrisBlock activeTetrisBlock;
 
-
+    private bool isGamePaused;
+    
     private float lastInputTime;
     private float inputInterval = 0.1f;
     private void OnEnable()
     {
         PlayerInputHelper.OnRotate += PlayerInputHelper_OnRotate;
         GameGrid.OnRowsHandled += GameGrid_OnRowsHandled;
+        ScoreManager.OnLevelUp += ScoreManager_OnLevelUp;
     }
 
     private void OnDisable()
     {
         PlayerInputHelper.OnRotate -= PlayerInputHelper_OnRotate;
         GameGrid.OnRowsHandled -= GameGrid_OnRowsHandled;
+        ScoreManager.OnLevelUp -= ScoreManager_OnLevelUp;
     }
 
     private void Start()
@@ -40,6 +47,35 @@ public class GameManager : MonoBehaviour
         SpawnTetrisBlock();
     }
 
+    private void ScoreManager_OnLevelUp(int level)
+    {
+        GameSpeedUp(level);
+    }
+
+    private void GameSpeedUp(int level)
+    {
+
+    }
+    public void OpenSettings()
+    {
+        PauseGame();
+        OnSettingsBtnPressed?.Invoke();
+    }
+    public void OpenRemoveAdsPanel()
+    {
+        PauseGame();
+        OnRemoveAdsBtnPressed?.Invoke();
+    }
+    public void PauseGame()
+    {
+        isGamePaused = true;
+        OnGamePaused?.Invoke();
+    }
+    public void UnpauseGame()
+    {
+        isGamePaused = false;
+        OnGameUnPaused?.Invoke();
+    }
     private void SpawnTetrisBlock()
     {
         if (grid.IsSpawnAreaValid())
@@ -56,6 +92,8 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (isGamePaused) return;
+
         PlayerMovementControl();
 
         if (verticalMovementLimiter.IsEnoughTimePassed())
