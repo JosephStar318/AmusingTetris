@@ -2,14 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using System;
 
 public class CinemachineHelper : MonoBehaviour
 {
     public static CinemachineHelper Instance { get; private set; }
 
-    [SerializeField] private CinemachineVirtualCamera[] virtualCameras;
+    [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
     [SerializeField] private Transform defaultTarget;
+    private CinemachineImpulseSource impulseSource;
 
     private void Awake()
     {
@@ -22,23 +24,40 @@ public class CinemachineHelper : MonoBehaviour
             Instance = this;
         }
     }
+    private void Start()
+    {
+        impulseSource = GetComponent<CinemachineImpulseSource>();
+    }
+    /// <summary>
+    /// Curve should be in range of (-1, 1]
+    /// 
+    /// </summary>
+    /// <param name="curve"></param>
+    /// <param name="inTime"></param>
+    /// <param name="time"></param>
+    public void ZoomEffect(AnimationCurve curve, float time, Action callback = null)
+    {
+        StartCoroutine(Zoom(curve, time, callback));
+    }
+    public void ShakeScreen(float force)
+    {
+        impulseSource.GenerateImpulse(force);
+    }
 
-    public void FollowTarget(Transform target)
+    private IEnumerator Zoom(AnimationCurve curve, float time, Action callback)
     {
-        foreach (var camera in virtualCameras)
+        float startSize = virtualCamera.m_Lens.OrthographicSize;
+
+        float elapsedTime = 0;
+        while(elapsedTime < time)
         {
-            camera.m_Follow = target;
-            camera.m_LookAt = target;
+            virtualCamera.m_Lens.OrthographicSize = startSize * (curve.Evaluate(elapsedTime / time) + 1);
+            elapsedTime += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
         }
-      
+        virtualCamera.m_Lens.OrthographicSize = startSize;
+        callback?.Invoke();
     }
-    public void FollowDefault()
-    {
-        foreach (var camera in virtualCameras)
-        {
-            camera.m_Follow = defaultTarget;
-            camera.m_LookAt = defaultTarget;
-        }
-    }
+
 
 }

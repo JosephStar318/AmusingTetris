@@ -15,5 +15,9 @@ public class TetrisDebugEditor : Editor
         {
             tetrisDebug.SpawnRandomBlock();
         }
+        if (GUILayout.Button("Zoom Effect"))
+        {
+            tetrisDebug.ZoomEffect();
+        }
     }
 }

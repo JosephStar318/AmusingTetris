@@ -27,7 +27,7 @@ public class ScoreManager : MonoBehaviour
     private void GameGrid_OnRowCleared(int rowCount)
     {
         UpdateScoreStatus(rowCount);
-        UpdateLevelStatus();
+        UpdateLevelStatus(rowCount);
     }
 
     private void UpdateScoreStatus(int rowCount)
@@ -37,12 +37,13 @@ public class ScoreManager : MonoBehaviour
         OnScoreChanged?.Invoke(Score, HighScore);
     }
 
-    private void UpdateLevelStatus()
+    private void UpdateLevelStatus(int rowCount)
     {
-        clearedRowCount++;
-        if (clearedRowCount % 10 == 0)
+        clearedRowCount += rowCount;
+        int calculatedLevel = (int)(clearedRowCount / 10f);
+        if (Level != calculatedLevel)
         {
-            Level++;
+            Level = calculatedLevel;
             OnLevelUp?.Invoke(Level);
         }
         OnLevelStatusUpdate?.Invoke(clearedRowCount % 10);
