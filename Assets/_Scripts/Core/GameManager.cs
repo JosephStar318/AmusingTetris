@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
     }
     public void RestartLevel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneLoader.StartLoadScene(SceneManager.GetActiveScene().name);
     }
     private void SpawnTetrisBlock()
     {
