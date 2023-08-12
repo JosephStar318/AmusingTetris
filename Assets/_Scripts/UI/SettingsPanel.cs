@@ -4,54 +4,68 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingsPanel : MonoBehaviour
+public class SettingsPanel : MonoBehaviour, IPanel
 {
+    public static event Action<bool> OnModeChanged;
     [SerializeField] private ToggleBar soundToggleBar;
+    [SerializeField] private ToggleBar classicModeToggleBar;
     [SerializeField] private Animation panelAnim;
-    private bool isActive;
 
     private void OnEnable()
     {
-        soundToggleBar.OnToggle.AddListener(OnToggle);
+        soundToggleBar.OnToggle.AddListener(OnSoundToggle);
+        classicModeToggleBar.OnToggle.AddListener(OnClassicModeToggle);
 
-        GameManager.OnSettingsBtnPressed += GameManager_OnSettingsBtnPressed;
-        GameManager.OnGameUnPaused += GameManager_OnGameUnPaused;
     }
     private void OnDisable()
     {
-        soundToggleBar.OnToggle.RemoveListener(OnToggle);
+        soundToggleBar.OnToggle.RemoveListener(OnSoundToggle);
+        classicModeToggleBar.OnToggle.RemoveListener(OnClassicModeToggle);
+    }
+    private void Start()
+    {
+        LoadPrefs();
+    }
 
-        GameManager.OnSettingsBtnPressed -= GameManager_OnSettingsBtnPressed;
-        GameManager.OnGameUnPaused -= GameManager_OnGameUnPaused;
-    }
-   
-    private void GameManager_OnSettingsBtnPressed()
+    private void LoadPrefs()
     {
-        Show();
+        bool soundState = PlayerPrefsHelper.GetSoundState();
+        bool classicMode = PlayerPrefsHelper.GetClassicModeState();
+
+        if (soundState)
+            AudioUtility.SetMasterVolume(100);
+        else
+            AudioUtility.SetMasterVolume(0);
+
+        soundToggleBar.UpdateStateWithoutNotify(soundState);
+        classicModeToggleBar.UpdateStateWithoutNotify(classicMode);
+        
+        OnModeChanged?.Invoke(classicMode);
     }
-    private void GameManager_OnGameUnPaused()
-    {
-        if (isActive)
-        {
-            Hide();
-        }
-    }
+
     public void Show()
     {
         panelAnim.Play("UI_PanelAppear");
-        isActive = true;
     }
     public void Hide()
     {
         panelAnim.Play("UI_PanelDisappear");
-        isActive = true;
     }
 
-    private void OnToggle(bool isOn)
+    private void OnSoundToggle(bool isOn)
     {
         if(isOn)
             AudioUtility.SetMasterVolume(100);
         else
             AudioUtility.SetMasterVolume(0);
+
+        PlayerPrefsHelper.SetSoundState(isOn);
     }
+    private void OnClassicModeToggle(bool isOn)
+    {
+        PlayerPrefsHelper.SetClassicMode(isOn);
+
+        OnModeChanged?.Invoke(isOn);
+    }
+
 }

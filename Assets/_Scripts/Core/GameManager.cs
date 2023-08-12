@@ -9,10 +9,10 @@ public class GameManager : MonoBehaviour
     public static event Action OnGameOver;
     public static event Action OnGamePaused;
     public static event Action OnGameUnPaused;
-    public static event Action OnRemoveAdsBtnPressed;
-    public static event Action OnSettingsBtnPressed;
 
     [SerializeField] private GameGrid grid;
+    [SerializeField] private SettingsPanel settingsPanel;
+    [SerializeField] private RemoveAdsPanel removeAdsPanel;
 
     [SerializeField] private float verticalSpeed;
     [SerializeField] private float horizontalSpeed;
@@ -44,8 +44,10 @@ public class GameManager : MonoBehaviour
     {
         verticalMovementLimiter = new TimeLimiter(verticalSpeed);
         horizontalMovementLimiter = new TimeLimiter(horizontalSpeed);
-
+        isGamePaused = true;
         SpawnTetrisBlock();
+
+        StartCoroutine(Delay.Seconds(2f, () => isGamePaused = false));
     }
 
     private void ScoreManager_OnLevelUp(int level)
@@ -60,12 +62,22 @@ public class GameManager : MonoBehaviour
     public void OpenSettings()
     {
         PauseGame();
-        OnSettingsBtnPressed?.Invoke();
+        settingsPanel.Show();
+    }
+    public void CloseSettings()
+    {
+        UnpauseGame();
+        settingsPanel.Hide();
     }
     public void OpenRemoveAdsPanel()
     {
         PauseGame();
-        OnRemoveAdsBtnPressed?.Invoke();
+        removeAdsPanel.Show();
+    }
+    public void CloseRemoveAdsPanel()
+    {
+        UnpauseGame();
+        removeAdsPanel.Hide();
     }
     public void PauseGame()
     {

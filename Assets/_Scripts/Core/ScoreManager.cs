@@ -24,6 +24,11 @@ public class ScoreManager : MonoBehaviour
         GameGrid.OnRowCleared -= GameGrid_OnRowCleared;
     }
 
+    private void Start()
+    {
+        HighScore = PlayerPrefsHelper.GetHighScore();
+        OnScoreChanged?.Invoke(Score, HighScore);
+    }
     private void GameGrid_OnRowCleared(int rowCount)
     {
         UpdateScoreStatus(rowCount);
@@ -34,6 +39,7 @@ public class ScoreManager : MonoBehaviour
     {
         Score += GetScore(rowCount);
         HighScore = Score > HighScore ? Score : HighScore;
+        PlayerPrefsHelper.SetHighScore(HighScore);
         OnScoreChanged?.Invoke(Score, HighScore);
     }
 

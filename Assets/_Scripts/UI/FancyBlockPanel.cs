@@ -6,9 +6,9 @@ using UnityEngine.UI;
 
 public class FancyBlockPanel : MonoBehaviour
 {
-    private List<Transform> blocks = new List<Transform>();
     [SerializeField] private BlockColorsSO blockColorsSO;
     [Range(0, 100)] [SerializeField] private int thresholdIndex = 0;
+    private List<Transform> blocks = new List<Transform>();
 
     public int ThresholdIndex => Mathf.RoundToInt((thresholdIndex / 100f) * blocks.Count);
     private void Start()
