@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float verticalSpeed;
     [SerializeField] private float horizontalSpeed;
 
+    [SerializeField] private AudioClip moveSound;
+
     private TimeLimiter verticalMovementLimiter;
     private TimeLimiter horizontalMovementLimiter;
 
@@ -39,7 +41,6 @@ public class GameManager : MonoBehaviour
         GameGrid.OnRowsHandled -= GameGrid_OnRowsHandled;
         ScoreManager.OnLevelUp -= ScoreManager_OnLevelUp;
     }
-
     private void Start()
     {
         verticalMovementLimiter = new TimeLimiter(verticalSpeed);
@@ -147,6 +148,7 @@ public class GameManager : MonoBehaviour
                 if (grid.IsRightValid(activeTetrisBlock))
                 {
                     activeTetrisBlock.transform.Translate(Vector2.right * grid.CellWidth, Space.World);
+                    AudioUtility.CreateSFX(moveSound, transform.position, AudioUtility.AudioGroups.SFX, 0.8f);
                     lastInputTime = Time.time;
                 }
             }
@@ -155,6 +157,7 @@ public class GameManager : MonoBehaviour
                 if (grid.IsLeftValid(activeTetrisBlock))
                 {
                     activeTetrisBlock.transform.Translate(-Vector2.right * grid.CellWidth, Space.World);
+                    AudioUtility.CreateSFX(moveSound, transform.position, AudioUtility.AudioGroups.SFX, 0.8f);
                     lastInputTime = Time.time;
                 }
             }
@@ -165,7 +168,45 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    public void Rotate()
+    {
+        if (activeTetrisBlock == null) return;
 
+        grid.RotateBlockInGrid(activeTetrisBlock);
+        AudioUtility.CreateSFX(moveSound, transform.position, AudioUtility.AudioGroups.SFX, 0.8f);
+    }
+    public void MoveRight()
+    {
+        if (grid.IsRightValid(activeTetrisBlock))
+        {
+            activeTetrisBlock.transform.Translate(Vector2.right * grid.CellWidth, Space.World);
+            AudioUtility.CreateSFX(moveSound, transform.position, AudioUtility.AudioGroups.SFX, 0.8f);
+        }
+    }
+    public void MoveLeft()
+    {
+        if (grid.IsLeftValid(activeTetrisBlock))
+        {
+            activeTetrisBlock.transform.Translate(-Vector2.right * grid.CellWidth, Space.World);
+            AudioUtility.CreateSFX(moveSound, transform.position, AudioUtility.AudioGroups.SFX, 0.8f);
+        }
+    }
+    public void MoveDown()
+    {
+        if (activeTetrisBlock == null) return;
+
+        if (grid.IsDownValid(activeTetrisBlock))
+        {
+            activeTetrisBlock.transform.Translate(Vector2.down * grid.CellHeight, Space.World);
+            AudioUtility.CreateSFX(moveSound, transform.position, AudioUtility.AudioGroups.SFX, 0.8f);
+        }
+        else
+        {
+            TetrisBlock temp = activeTetrisBlock;
+            activeTetrisBlock = null;
+            grid.HandleCompletedRows(temp);
+        }
+    }
     private void GameGrid_OnRowsHandled()
     {
         SpawnTetrisBlock();
@@ -175,7 +216,8 @@ public class GameManager : MonoBehaviour
     {
         if (activeTetrisBlock == null) return;
 
-         grid.RotateBlockInGrid(activeTetrisBlock);
+        grid.RotateBlockInGrid(activeTetrisBlock);
+        AudioUtility.CreateSFX(moveSound, transform.position, AudioUtility.AudioGroups.SFX, 0.8f);
     }
 
 }

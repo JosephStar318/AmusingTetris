@@ -7,13 +7,18 @@ public class HUD : MonoBehaviour
 {
     [SerializeField] private Image previewImage;
     [SerializeField] private GameObject removeAdsBtn;
+
+    [SerializeField] private GameObject classicControls;
+    [SerializeField] private GameObject modernControls;
     private void OnEnable()
     {
         GameGrid.OnPreviewChanged += GameGrid_OnPreviewChanged;
+        SettingsPanel.OnModeChanged += SettingsPanel_OnModeChanged;
     }
     private void OnDisable()
     {
         GameGrid.OnPreviewChanged -= GameGrid_OnPreviewChanged;
+        SettingsPanel.OnModeChanged -= SettingsPanel_OnModeChanged;
     }
     private void Start()
     {
@@ -23,5 +28,18 @@ public class HUD : MonoBehaviour
     {
         previewImage.sprite = block.GetPreviewImage();
         previewImage.color = block.GetColor();
+    }
+    private void SettingsPanel_OnModeChanged(bool isClassicMode)
+    {
+        if (isClassicMode)
+        {
+            classicControls.SetActive(true);
+            modernControls.SetActive(false);
+        }
+        else
+        {
+            classicControls.SetActive(false);
+            modernControls.SetActive(true);
+        }
     }
 }
