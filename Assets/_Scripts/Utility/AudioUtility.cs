@@ -78,10 +78,9 @@ public class AudioUtility
             TimedSelfDestruct timedSelfDestruct = impactSfxInstance.AddComponent<TimedSelfDestruct>();
             timedSelfDestruct.LifeTime = clip.length;
         }
-       
     }
     public static void CreateSFXLoop(List<AudioClip> clips, Vector3 position, AudioGroups audioGroup, float spatialBlend, float period, ref float lastSFXTime,
-        float rolloffDistanceMin = 1f)
+       float rolloffDistanceMin = 1f)
     {
         if (Time.time - lastSFXTime > period)
         {
@@ -91,7 +90,6 @@ public class AudioUtility
             impactSfxInstance.transform.position = position;
             AudioSource source = impactSfxInstance.AddComponent<AudioSource>();
 
-            
             source.clip = clips[UnityEngine.Random.Range(0, clips.Count)];
             source.spatialBlend = spatialBlend;
             source.minDistance = rolloffDistanceMin;
@@ -104,6 +102,25 @@ public class AudioUtility
             timedSelfDestruct.LifeTime = source.clip.length;
         }
 
+    }
+
+    public static void CreateSFXRandom(List<AudioClip> clips, Vector3 position, AudioGroups audioGroup, float spatialBlend,
+        float rolloffDistanceMin = 1f)
+    {
+            GameObject impactSfxInstance = new GameObject();
+            impactSfxInstance.transform.position = position;
+            AudioSource source = impactSfxInstance.AddComponent<AudioSource>();
+            
+            source.clip = clips[UnityEngine.Random.Range(0, clips.Count)];
+            source.spatialBlend = spatialBlend;
+            source.minDistance = rolloffDistanceMin;
+            source.Play();
+
+            source.outputAudioMixerGroup = GetAudioGroup(audioGroup);
+            source.maxDistance = 10f;
+
+            TimedSelfDestruct timedSelfDestruct = impactSfxInstance.AddComponent<TimedSelfDestruct>();
+            timedSelfDestruct.LifeTime = source.clip.length;
     }
     public static AudioMixerGroup GetAudioGroup(AudioGroups group)
     {

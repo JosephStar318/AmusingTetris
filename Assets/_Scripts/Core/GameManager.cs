@@ -9,10 +9,12 @@ public class GameManager : MonoBehaviour
     public static event Action OnGameOver;
     public static event Action OnGamePaused;
     public static event Action OnGameUnPaused;
+    public static event Action<TetrisBlock> OnBlockGrounded;
 
     [SerializeField] private GameGrid grid;
     [SerializeField] private SettingsPanel settingsPanel;
     [SerializeField] private RemoveAdsPanel removeAdsPanel;
+    [SerializeField] private GameOverPanel gameOverPanel;
 
     [SerializeField] private float verticalSpeed;
     [SerializeField] private float horizontalSpeed;
@@ -43,8 +45,8 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        verticalMovementLimiter = new TimeLimiter(verticalSpeed);
-        horizontalMovementLimiter = new TimeLimiter(horizontalSpeed);
+        verticalMovementLimiter = new TimeLimiter(1/verticalSpeed);
+        horizontalMovementLimiter = new TimeLimiter(1/horizontalSpeed);
         isGamePaused = true;
         SpawnTetrisBlock();
 
@@ -58,7 +60,8 @@ public class GameManager : MonoBehaviour
 
     private void GameSpeedUp(int level)
     {
-
+        verticalSpeed++;
+        verticalMovementLimiter = new TimeLimiter(1 / verticalSpeed);
     }
     public void OpenSettings()
     {
@@ -79,6 +82,16 @@ public class GameManager : MonoBehaviour
     {
         UnpauseGame();
         removeAdsPanel.Hide();
+    }
+    public void ResumeFromHalf()
+    {
+        CloseGameOverPanel();
+        grid.ClearHalf();
+        StartCoroutine(Delay.Seconds(0.2f, () => SpawnTetrisBlock()));
+    }
+    private void CloseGameOverPanel()
+    {
+        gameOverPanel.Hide();
     }
     public void PauseGame()
     {
@@ -105,6 +118,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("Game Over");
             activeTetrisBlock = null;
             OnGameOver?.Invoke();
+            gameOverPanel.Show();
         }
     }
 
@@ -132,6 +146,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("HANDLE ROWS");
             TetrisBlock temp = activeTetrisBlock;
             activeTetrisBlock = null;
+            OnBlockGrounded?.Invoke(temp);
             grid.HandleCompletedRows(temp);
         }
     }
@@ -204,6 +219,7 @@ public class GameManager : MonoBehaviour
         {
             TetrisBlock temp = activeTetrisBlock;
             activeTetrisBlock = null;
+            OnBlockGrounded?.Invoke(temp);
             grid.HandleCompletedRows(temp);
         }
     }

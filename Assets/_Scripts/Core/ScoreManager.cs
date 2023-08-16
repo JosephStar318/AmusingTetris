@@ -17,11 +17,11 @@ public class ScoreManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameGrid.OnRowCleared += GameGrid_OnRowCleared;
+        GameGrid.OnBeforeRowsCleared += GameGrid_OnBeforeRowsCleared; ;
     }
     private void OnDisable()
     {
-        GameGrid.OnRowCleared -= GameGrid_OnRowCleared;
+        GameGrid.OnBeforeRowsCleared -= GameGrid_OnBeforeRowsCleared; ;
     }
 
     private void Start()
@@ -29,12 +29,11 @@ public class ScoreManager : MonoBehaviour
         HighScore = PlayerPrefsHelper.GetHighScore();
         OnScoreChanged?.Invoke(Score, HighScore);
     }
-    private void GameGrid_OnRowCleared(int rowCount)
+    private void GameGrid_OnBeforeRowsCleared(int rowCount, List<List<Transform>> rowList, Action callback)
     {
         UpdateScoreStatus(rowCount);
         UpdateLevelStatus(rowCount);
     }
-
     private void UpdateScoreStatus(int rowCount)
     {
         Score += GetScore(rowCount);

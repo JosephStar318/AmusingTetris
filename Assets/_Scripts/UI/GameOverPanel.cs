@@ -2,22 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameOverPanel : MonoBehaviour
+public class GameOverPanel : MonoBehaviour, IPanel
 {
     [SerializeField] private Animation panelAnim;
-
-    private void OnEnable()
-    {
-        GameManager.OnGameOver += GameManager_OnGameOver;
-    }
-    private void OnDisable()
-    {
-        GameManager.OnGameOver -= GameManager_OnGameOver;
-    }
-    private void GameManager_OnGameOver()
-    {
-        Show();
-    }
     public void Show()
     {
         panelAnim.Play("UI_PanelAppear");

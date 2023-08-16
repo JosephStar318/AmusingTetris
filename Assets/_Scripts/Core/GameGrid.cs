@@ -9,7 +9,7 @@ public class GameGrid : MonoBehaviour
     public static event Action<TetrisBlock> OnPreviewChanged;
 
     public static event Action OnRowsHandled;
-    public static event Action<int> OnRowCleared;
+    public static event Action<int, List<List<Transform>>, Action> OnBeforeRowsCleared;
 
     [SerializeField] private float cellWidth;
     [SerializeField] private float cellHeight;
@@ -21,6 +21,7 @@ public class GameGrid : MonoBehaviour
 
     [SerializeField] public TetrisBlocksSO tetrisBlocks;
     [SerializeField] private LayerMask blockLayer;
+
     private Color previewBlockColor;
     private TetrisBlock previewBlock;
 
@@ -280,38 +281,50 @@ public class GameGrid : MonoBehaviour
             }
         }
 
-        if (completedRowList.Count == 1)
+        if(completedRowList.Count > 0)
         {
-            DestroyRow(completedRowList[0]);
-            OnRowCleared?.Invoke(1);
+            List<List<Transform>> rows = completedRowList.GetRange(0, completedRowList.Count);
+            OnBeforeRowsCleared?.Invoke(
+                rows.Count, 
+                rows, 
+                () => {
+                foreach (List<Transform> row in rows)
+                {
+                    DestroyRow(row);
+                }
+            });
+
         }
-        else if(completedRowList.Count == 2)
-        {
-            DestroyRow(completedRowList[0]);
-            yield return new WaitForFixedUpdate();
-            DestroyRow(completedRowList[1]);
-            OnRowCleared?.Invoke(2);
-        }
-        else if(completedRowList.Count == 3)
-        {
-            DestroyRow(completedRowList[0]);
-            yield return new WaitForFixedUpdate();
-            DestroyRow(completedRowList[1]);
-            yield return new WaitForFixedUpdate();
-            DestroyRow(completedRowList[2]);
-            OnRowCleared?.Invoke(3);
-        }
-        else if(completedRowList.Count == 4)
-        {
-            DestroyRow(completedRowList[0]);
-            yield return new WaitForFixedUpdate();
-            DestroyRow(completedRowList[1]);
-            yield return new WaitForFixedUpdate();
-            DestroyRow(completedRowList[2]);
-            yield return new WaitForFixedUpdate();
-            DestroyRow(completedRowList[3]);
-            OnRowCleared?.Invoke(4);
-        }
+        yield return null;
+
+        //if (completedRowList.Count == 1)
+        //{
+        //    OnBeforeRowsCleared?.Invoke(1, completedRowList[0], () => DestroyRow(completedRowList[0]));
+        //}
+        //else if (completedRowList.Count == 2)
+        //{
+            
+        //    yield return new WaitForFixedUpdate();
+        //    OnBeforeRowsCleared?.Invoke(2, completedRowList[1], () => DestroyRow(completedRowList[1]));
+        //}
+        //else if(completedRowList.Count == 3)
+        //{
+        //    OnBeforeRowsCleared?.Invoke(3, completedRowList[0], () => DestroyRow(completedRowList[0]));
+        //    yield return new WaitForFixedUpdate();
+        //    OnBeforeRowsCleared?.Invoke(3, completedRowList[1], () => DestroyRow(completedRowList[1]));
+        //    yield return new WaitForFixedUpdate();
+        //    OnBeforeRowsCleared?.Invoke(3, completedRowList[2], () => DestroyRow(completedRowList[2]));
+        //}
+        //else if(completedRowList.Count == 4)
+        //{
+        //    OnBeforeRowsCleared?.Invoke(4, completedRowList[0], () => DestroyRow(completedRowList[0]));
+        //    yield return new WaitForFixedUpdate();
+        //    OnBeforeRowsCleared?.Invoke(4, completedRowList[1], () => DestroyRow(completedRowList[1]));
+        //    yield return new WaitForFixedUpdate();
+        //    OnBeforeRowsCleared?.Invoke(4, completedRowList[2], () => DestroyRow(completedRowList[2]));
+        //    yield return new WaitForFixedUpdate();
+        //    OnBeforeRowsCleared?.Invoke(4, completedRowList[3], () => DestroyRow(completedRowList[3]));
+        //}
         OnRowsHandled?.Invoke();
     }
 
@@ -337,7 +350,17 @@ public class GameGrid : MonoBehaviour
             coll.transform.Translate(Vector2.down * cellHeight, Space.World);
         }
     }
+    public void ClearHalf()
+    {
+        Vector2 pointA = GetPositionFromIndexVector(new Vector2Int(0, (cellSizeY / 2) - 1));
+        Vector2 pointB = GetPositionFromIndexVector(new Vector2Int(cellSizeX - 1, cellSizeY - 1));
 
+        Collider2D[] allBlocks = Physics2D.OverlapAreaAll(pointA, pointB + Vector2.up, blockLayer);
+        foreach (Collider2D coll in allBlocks)
+        {
+            Destroy(coll.gameObject);
+        }
+    }
     private bool CheckRow(int j, out List<Transform> resultList)
     {
         resultList = new List<Transform>();
