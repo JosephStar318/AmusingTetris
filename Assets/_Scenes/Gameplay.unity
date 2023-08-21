@@ -260,7 +260,7 @@ MonoBehaviour:
   settingsPanel: {fileID: 7336925142825305465}
   removeAdsPanel: {fileID: 980975118}
   gameOverPanel: {fileID: 2032369100}
-  verticalSpeed: 2
+  verticalSpeed: 1.5
   horizontalSpeed: 1
   moveSound: {fileID: 8300000, guid: e39ab2640ab7d504ea4d0d342a66c412, type: 3}
 --- !u!114 &167694823
@@ -490,7 +490,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 3235ab505ef5ff24dad060e91cabed41, type: 3}
   - {fileID: 8300000, guid: 7cf42165bc215c640b0e85936562db39, type: 3}
   - {fileID: 8300000, guid: c2e2d3489a4bf7042a1aed3f94220d4d, type: 3}
-  levelUpSfx: {fileID: 8300000, guid: 6d5e9f18b20d22a4dbfe38e4811b1096, type: 3}
+  levelUpSfx: {fileID: 8300000, guid: 50787b3819bfd42418bdab27a9c6bf15, type: 3}
+  tetrisSfx: {fileID: 8300000, guid: b2e57fcea81ed0b46a6ae9d34236f40e, type: 3}
 --- !u!1 &192009201
 GameObject:
   m_ObjectHideFlags: 0
@@ -5423,8 +5424,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  pixelDistToDetect: 60
-  touchPeriod: 0.1
+  pixelDistToDetect: 50
+  touchPeriod: 0.15
 --- !u!222 &1672019410
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5861,6 +5862,48 @@ MonoBehaviour:
   blockLayer:
     serializedVersion: 2
     m_Bits: 64
+  fallingBlockCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.3216461
+      value: 0.5878365
+      inSlope: 1.4924399
+      outSlope: 1.4924399
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.67973876
+      value: 0.56310105
+      inSlope: -0.4251726
+      outSlope: -0.4251726
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &1903241621
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -31,6 +31,8 @@ public class GameGrid : MonoBehaviour
     public float CellWidth => cellWidth;
     public float CellHeight => cellHeight;
 
+    [SerializeField] private AnimationCurve fallingBlockCurve;
+    private float fallingBlockCurveIndex;
     private void Start()
     {
         SetupGrid();
@@ -53,7 +55,7 @@ public class GameGrid : MonoBehaviour
     }
     public bool IsSpawnAreaValid()
     {
-        if(previewBlock != null)
+        if (previewBlock != null)
         {
             foreach (Transform child in previewBlock.transform)
             {
@@ -123,7 +125,7 @@ public class GameGrid : MonoBehaviour
     {
         for (int i = 0; i < rotatedBlockIndexList.Count; i++)
         {
-            rotatedBlockIndexList[i] -= new Vector2Int(1,0) * offset;
+            rotatedBlockIndexList[i] -= new Vector2Int(1, 0) * offset;
         }
         return rotatedBlockIndexList;
     }
@@ -237,7 +239,7 @@ public class GameGrid : MonoBehaviour
 
             return spawnedBlock;
         }
-       
+
     }
 
     private void SetupPreview()
@@ -257,7 +259,7 @@ public class GameGrid : MonoBehaviour
     private IEnumerator HandleRows(TetrisBlock block)
     {
         List<List<Transform>> completedRowList = new List<List<Transform>>();
-        List<int> completedRowIndexes = new List<int>();
+        List<int> checkedRowIndexes = new List<int>();
 
         Transform[] children = new Transform[block.transform.childCount];
         for (int i = 0; i < block.transform.childCount; i++)
@@ -269,8 +271,8 @@ public class GameGrid : MonoBehaviour
             if (child == null) continue;
 
             int j = GetIndexFromPosition(child.position).y;
-            if (completedRowIndexes.Contains(j)) continue;
-            completedRowIndexes.Add(j);
+            if (checkedRowIndexes.Contains(j)) continue;
+            checkedRowIndexes.Add(j);
 
             if (j >= 0 && j < cellSizeY)
             {
@@ -281,52 +283,85 @@ public class GameGrid : MonoBehaviour
             }
         }
 
-        if(completedRowList.Count > 0)
+        if (completedRowList.Count > 0)
         {
             List<List<Transform>> rows = completedRowList.GetRange(0, completedRowList.Count);
             OnBeforeRowsCleared?.Invoke(
-                rows.Count, 
-                rows, 
-                () => {
-                foreach (List<Transform> row in rows)
+                rows.Count,
+                rows,
+                () =>
                 {
-                    DestroyRow(row);
-                }
-            });
+                    foreach (List<Transform> row in rows)
+                    {
+                        DestroyRow(row);
+                    }
+                });
+
+            //Testing
+            //    int minRowIndex = cellSizeY;
+
+            //    int middle = (completedRowList[0].Count / 2) - 1;
+            //    for (int j = 0; j <= middle; j++)
+            //    {
+            //        for (int i = 0; i < completedRowList.Count; i++)
+            //        {
+            //            Destroy(completedRowList[i][middle - j].gameObject);
+            //            OnBlockDestroyed?.Invoke(completedRowList[i][middle - j].position);
+            //            Destroy(completedRowList[i][middle + j + 1].gameObject);
+            //            OnBlockDestroyed?.Invoke(completedRowList[i][middle + j + 1].position);
+            //            minRowIndex = Mathf.Min(minRowIndex, GetIndexFromPosition(completedRowList[i][0].position).y);
+            //        }
+            //        yield return new WaitForSeconds(Time.fixedDeltaTime);
+            //    }
+            //    for (int i = 0; i < completedRowList.Count; i++)
+            //    {
+            //        int rowIndex = GetIndexFromPosition(completedRowList[i][0].position).y;
+            //        ShiftBlocksBy(completedRowList, rowIndex);
+
+            //    }
+            //}
+            //else
+            //{
 
         }
-        yield return null;
 
-        //if (completedRowList.Count == 1)
-        //{
-        //    OnBeforeRowsCleared?.Invoke(1, completedRowList[0], () => DestroyRow(completedRowList[0]));
-        //}
-        //else if (completedRowList.Count == 2)
-        //{
-            
-        //    yield return new WaitForFixedUpdate();
-        //    OnBeforeRowsCleared?.Invoke(2, completedRowList[1], () => DestroyRow(completedRowList[1]));
-        //}
-        //else if(completedRowList.Count == 3)
-        //{
-        //    OnBeforeRowsCleared?.Invoke(3, completedRowList[0], () => DestroyRow(completedRowList[0]));
-        //    yield return new WaitForFixedUpdate();
-        //    OnBeforeRowsCleared?.Invoke(3, completedRowList[1], () => DestroyRow(completedRowList[1]));
-        //    yield return new WaitForFixedUpdate();
-        //    OnBeforeRowsCleared?.Invoke(3, completedRowList[2], () => DestroyRow(completedRowList[2]));
-        //}
-        //else if(completedRowList.Count == 4)
-        //{
-        //    OnBeforeRowsCleared?.Invoke(4, completedRowList[0], () => DestroyRow(completedRowList[0]));
-        //    yield return new WaitForFixedUpdate();
-        //    OnBeforeRowsCleared?.Invoke(4, completedRowList[1], () => DestroyRow(completedRowList[1]));
-        //    yield return new WaitForFixedUpdate();
-        //    OnBeforeRowsCleared?.Invoke(4, completedRowList[2], () => DestroyRow(completedRowList[2]));
-        //    yield return new WaitForFixedUpdate();
-        //    OnBeforeRowsCleared?.Invoke(4, completedRowList[3], () => DestroyRow(completedRowList[3]));
-        //}
         OnRowsHandled?.Invoke();
+        yield return null;
     }
+
+    //private void ShiftBlocksBy(List<List<Transform>> completedRowList, int rowIndex)
+    //{
+    //    Vector2 pointA = GetPositionFromIndexVector(new Vector2Int(0, rowIndex + 1));
+    //    Vector2 pointB = GetPositionFromIndexVector(new Vector2Int(cellSizeX - 1, cellSizeY - 1));
+    //    Collider2D[] allBlocks = Physics2D.OverlapAreaAll(pointA, pointB);
+    //    List<Vector2> blockDestinations = new List<Vector2>(allBlocks.Length);
+
+    //    foreach (Collider2D coll in allBlocks)
+    //    {
+    //        Vector2 destination = (Vector2)coll.transform.position + Vector2.down * cellHeight * completedRowList.Count;
+    //        blockDestinations.Add(destination);
+    //    }
+
+    //    StartCoroutine(FallBlocks(allBlocks, blockDestinations, () => OnRowsHandled?.Invoke()));
+    //}
+
+    //private IEnumerator FallBlocks(Collider2D[] allBlocks, List<Vector2> blockDestinations, Action callback)
+    //{
+    //    while (fallingBlockCurveIndex < 1)
+    //    {
+    //        fallingBlockCurveIndex += Time.fixedDeltaTime * 3f;
+    //        fallingBlockCurveIndex = Mathf.Clamp(fallingBlockCurveIndex, 0, 1);
+
+    //        for (int i = 0; i < allBlocks.Length; i++)
+    //        {
+    //            allBlocks[i].transform.position = Vector2.Lerp(allBlocks[i].transform.position, blockDestinations[i], fallingBlockCurve.Evaluate(fallingBlockCurveIndex));
+    //        }
+
+    //        yield return new WaitForFixedUpdate();
+    //    }
+    //    fallingBlockCurveIndex = 0;
+    //    callback.Invoke();
+    //}
 
     private void DestroyRow(List<Transform> resultList)
     {
@@ -337,6 +372,7 @@ public class GameGrid : MonoBehaviour
         }
         ShiftGridDownByOne(rowIndex);
     }
+
 
     private void ShiftGridDownByOne(int rowIndex)
     {
@@ -374,8 +410,11 @@ public class GameGrid : MonoBehaviour
             }
             else
             {
-                if(resultList.Count > 8)
-                Debug.Log($"This Index Is null or empty: {currentIndexVector}");
+                if (resultList.Count > 8)
+                {
+                    Debug.ClearDeveloperConsole();
+                    Debug.Log($"This Index Is null or empty: {currentIndexVector}");
+                }
             }
         }
         if (resultList.Count == cellSizeX)

@@ -7,6 +7,7 @@ public class SFXManager : MonoBehaviour
     [SerializeField] private List<AudioClip> groundedSfx;
     [SerializeField] private List<AudioClip> breakSfx;
     [SerializeField] private AudioClip levelUpSfx;
+    [SerializeField] private AudioClip tetrisSfx;
 
     private void OnEnable()
     {
@@ -30,6 +31,7 @@ public class SFXManager : MonoBehaviour
         {
             AudioUtility.CreateSFXRandom(breakSfx, transform.position, AudioUtility.AudioGroups.SFX, 1f);
         }
+        if (rowCount == 4) AudioUtility.CreateSFX(tetrisSfx, transform.position, AudioUtility.AudioGroups.SFX, 1f);
     }
     private void GameManager_OnBlockGrounded(TetrisBlock block)
     {

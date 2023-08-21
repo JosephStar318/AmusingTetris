@@ -52,7 +52,17 @@ public class GameManager : MonoBehaviour
 
         StartCoroutine(Delay.Seconds(2f, () => isGamePaused = false));
     }
+    private void FixedUpdate()
+    {
+        if (isGamePaused) return;
 
+        PlayerMovementControl();
+
+        if (verticalMovementLimiter.IsEnoughTimePassed())
+        {
+            VerticalMovement();
+        }
+    }
     private void ScoreManager_OnLevelUp(int level)
     {
         GameSpeedUp(level);
@@ -60,7 +70,7 @@ public class GameManager : MonoBehaviour
 
     private void GameSpeedUp(int level)
     {
-        verticalSpeed++;
+        verticalSpeed += 0.5f;
         verticalMovementLimiter = new TimeLimiter(1 / verticalSpeed);
     }
     public void OpenSettings()
@@ -122,17 +132,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (isGamePaused) return;
 
-        PlayerMovementControl();
-
-        if (verticalMovementLimiter.IsEnoughTimePassed())
-        {
-            VerticalMovement();
-        }
-    }
     private void VerticalMovement()
     {
         if (activeTetrisBlock == null) return;
@@ -143,10 +143,10 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("HANDLE ROWS");
             TetrisBlock temp = activeTetrisBlock;
             activeTetrisBlock = null;
             OnBlockGrounded?.Invoke(temp);
+            Debug.Log("Block grounded");
             grid.HandleCompletedRows(temp);
         }
     }

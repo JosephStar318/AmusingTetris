@@ -17,7 +17,7 @@ public class ModernControls : MonoBehaviour
     [SerializeField] private float pixelDistToDetect = 100f;
     [SerializeField] private float touchPeriod = 0.05f;
 
-    private float lastTouchTime;
+    private float touchStartTime;
 
     private void Update()
     {
@@ -28,7 +28,7 @@ public class ModernControls : MonoBehaviour
             if(touch.phase == TouchPhase.Began)
             {
                 movePos = Vector2.zero;
-                lastTouchTime = Time.time;
+                touchStartTime = Time.time;
             }
             else if(touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
             {
@@ -39,23 +39,26 @@ public class ModernControls : MonoBehaviour
                     movePos = Vector2.zero;
                     OnRight?.Invoke();
                     Debug.Log("Swipe right");
+                    touchStartTime = 0;
                 }
                 else if (movePos.x < -pixelDistToDetect)
                 {
                     movePos = Vector2.zero;
                     OnLeft?.Invoke();
                     Debug.Log("Swipe left");
+                    touchStartTime = 0;
                 }
                 else if (movePos.y < -pixelDistToDetect)
                 {
                     movePos = Vector2.zero;
                     Debug.Log("Swipe Down");
                     OnDown?.Invoke();
+                    touchStartTime = 0;
                 }
             }
             else if(touch.phase == TouchPhase.Ended)
             {
-                if(Time.time - lastTouchTime < touchPeriod)
+                if(Time.time - touchStartTime < touchPeriod)
                 {
                     OnRotate?.Invoke();
                 }

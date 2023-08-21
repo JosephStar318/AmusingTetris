@@ -6,7 +6,10 @@ using UnityEngine;
 public class BackgroundMusicManager : MonoBehaviour
 {
     private AudioSource audioSource;
-
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
     private IEnumerator VolumeDownMusic(float target, float duration)
     {
         float elapsedTime = 0;
