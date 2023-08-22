@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
     private TetrisBlock activeTetrisBlock;
 
     private bool isGamePaused;
-    
+
     private float lastInputTime;
     private float inputInterval = 0.1f;
     private void OnEnable()
@@ -45,8 +45,8 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        verticalMovementLimiter = new TimeLimiter(1/verticalSpeed);
-        horizontalMovementLimiter = new TimeLimiter(1/horizontalSpeed);
+        verticalMovementLimiter = new TimeLimiter(1 / verticalSpeed);
+        horizontalMovementLimiter = new TimeLimiter(1 / horizontalSpeed);
         isGamePaused = true;
         SpawnTetrisBlock();
 
@@ -95,9 +95,15 @@ public class GameManager : MonoBehaviour
     }
     public void ResumeFromHalf()
     {
-        CloseGameOverPanel();
-        grid.ClearHalf();
-        StartCoroutine(Delay.Seconds(0.2f, () => SpawnTetrisBlock()));
+        AdsManager.Instance.WathcAd(
+            onSuccess: () =>
+            {
+                CloseGameOverPanel();
+                grid.ClearHalf();
+                StartCoroutine(Delay.Seconds(0.2f, () => SpawnTetrisBlock()));
+            },
+            onFail: () => Debug.Log("Failed")
+            );
     }
     private void CloseGameOverPanel()
     {
@@ -115,7 +121,7 @@ public class GameManager : MonoBehaviour
     }
     public void RestartLevel()
     {
-        SceneLoader.StartLoadScene(SceneManager.GetActiveScene().name);
+        AdsManager.Instance.PopupAdd(() => SceneLoader.StartLoadScene(SceneManager.GetActiveScene().name));
     }
     private void SpawnTetrisBlock()
     {
@@ -154,7 +160,7 @@ public class GameManager : MonoBehaviour
     {
         if (activeTetrisBlock == null) return;
 
-        if(Time.time - lastInputTime > inputInterval)
+        if (Time.time - lastInputTime > inputInterval)
         {
             Vector2 moveVector = PlayerInputHelper.Instance.GetMovementVector();
 

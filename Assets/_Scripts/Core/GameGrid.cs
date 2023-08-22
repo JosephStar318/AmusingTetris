@@ -296,37 +296,9 @@ public class GameGrid : MonoBehaviour
                         DestroyRow(row);
                     }
                 });
-
-            //Testing
-            //    int minRowIndex = cellSizeY;
-
-            //    int middle = (completedRowList[0].Count / 2) - 1;
-            //    for (int j = 0; j <= middle; j++)
-            //    {
-            //        for (int i = 0; i < completedRowList.Count; i++)
-            //        {
-            //            Destroy(completedRowList[i][middle - j].gameObject);
-            //            OnBlockDestroyed?.Invoke(completedRowList[i][middle - j].position);
-            //            Destroy(completedRowList[i][middle + j + 1].gameObject);
-            //            OnBlockDestroyed?.Invoke(completedRowList[i][middle + j + 1].position);
-            //            minRowIndex = Mathf.Min(minRowIndex, GetIndexFromPosition(completedRowList[i][0].position).y);
-            //        }
-            //        yield return new WaitForSeconds(Time.fixedDeltaTime);
-            //    }
-            //    for (int i = 0; i < completedRowList.Count; i++)
-            //    {
-            //        int rowIndex = GetIndexFromPosition(completedRowList[i][0].position).y;
-            //        ShiftBlocksBy(completedRowList, rowIndex);
-
-            //    }
-            //}
-            //else
-            //{
-
         }
-
-        OnRowsHandled?.Invoke();
         yield return null;
+        OnRowsHandled?.Invoke();
     }
 
     //private void ShiftBlocksBy(List<List<Transform>> completedRowList, int rowIndex)
@@ -407,14 +379,6 @@ public class GameGrid : MonoBehaviour
             if (IsFilled(GetPositionFromIndexVector(currentIndexVector), out Transform result))
             {
                 resultList.Add(result);
-            }
-            else
-            {
-                if (resultList.Count > 8)
-                {
-                    Debug.ClearDeveloperConsole();
-                    Debug.Log($"This Index Is null or empty: {currentIndexVector}");
-                }
             }
         }
         if (resultList.Count == cellSizeX)

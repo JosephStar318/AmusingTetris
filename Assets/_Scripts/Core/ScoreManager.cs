@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
@@ -9,12 +10,13 @@ public class ScoreManager : MonoBehaviour
     public static event Action<int,int> OnScoreChanged;
     public static event Action<int> OnLevelStatusUpdate;
 
+    [SerializeField] private GameObject scoreVfx;
     private int Level { get; set; }
     private int Score { get; set; }
     private int HighScore { get; set; }
 
     private int clearedRowCount;
-
+    private int calculatedScore;
     private void OnEnable()
     {
         GameGrid.OnBeforeRowsCleared += GameGrid_OnBeforeRowsCleared; ;
@@ -33,10 +35,15 @@ public class ScoreManager : MonoBehaviour
     {
         UpdateScoreStatus(rowCount);
         UpdateLevelStatus(rowCount);
+
+        List<Transform> randomRow = rowList[UnityEngine.Random.Range(0, rowList.Count)];
+        GameObject obj = Instantiate(scoreVfx, randomRow[randomRow.Count - 1].position - Vector3.forward, Quaternion.identity);
+        obj.GetComponentInChildren<TextMeshPro>().SetText($"+{calculatedScore}");
     }
     private void UpdateScoreStatus(int rowCount)
     {
-        Score += GetScore(rowCount);
+        calculatedScore = GetScore(rowCount);
+        Score += calculatedScore;
         HighScore = Score > HighScore ? Score : HighScore;
         PlayerPrefsHelper.SetHighScore(HighScore);
         OnScoreChanged?.Invoke(Score, HighScore);
