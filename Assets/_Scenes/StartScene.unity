@@ -320,6 +320,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: RemoveAdsPanel, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 1048759192653136415, guid: ee8a0263e8309b149af758759e30b283, type: 3}
+      propertyPath: onPurchaseFailed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 449897712}
+    - target: {fileID: 1048759192653136415, guid: ee8a0263e8309b149af758759e30b283, type: 3}
+      propertyPath: onPurchaseComplete.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 449897712}
     - target: {fileID: 2773418125665784527, guid: ee8a0263e8309b149af758759e30b283, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -436,6 +444,7 @@ GameObject:
   - component: {fileID: 449897709}
   - component: {fileID: 449897710}
   - component: {fileID: 449897711}
+  - component: {fileID: 449897712}
   m_Layer: 5
   m_Name: StartPanel
   m_TagString: Untagged
@@ -501,6 +510,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AudioMixers:
   - {fileID: 24100000, guid: 3caef68e3fc81d14895b4ffa93398889, type: 2}
+--- !u!114 &449897712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 449897708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b604aefc14a9c340a984f45b526405f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  premiumProductId: premium
 --- !u!1 &538980272
 GameObject:
   m_ObjectHideFlags: 0
@@ -1293,7 +1315,7 @@ GameObject:
   - component: {fileID: 1131384997}
   - component: {fileID: 1131384996}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

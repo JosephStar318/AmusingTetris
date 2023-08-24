@@ -11,7 +11,7 @@ public class ScoreManager : MonoBehaviour
     public static event Action<int> OnLevelStatusUpdate;
 
     [SerializeField] private GameObject scoreVfx;
-    private int Level { get; set; }
+    private int Level { get; set; } = 1;
     private int Score { get; set; }
     private int HighScore { get; set; }
 
@@ -52,7 +52,7 @@ public class ScoreManager : MonoBehaviour
     private void UpdateLevelStatus(int rowCount)
     {
         clearedRowCount += rowCount;
-        int calculatedLevel = (int)(clearedRowCount / 10f);
+        int calculatedLevel = (int)(clearedRowCount / 10f) + 1;
         if (Level != calculatedLevel)
         {
             Level = calculatedLevel;

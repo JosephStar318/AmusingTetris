@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
         PlayerInputHelper.OnRotate += PlayerInputHelper_OnRotate;
         GameGrid.OnRowsHandled += GameGrid_OnRowsHandled;
         ScoreManager.OnLevelUp += ScoreManager_OnLevelUp;
+        IAPManager.OnPremiumPurchase += IAPManager_OnPremiumPurchase;
     }
 
     private void OnDisable()
@@ -42,6 +43,7 @@ public class GameManager : MonoBehaviour
         PlayerInputHelper.OnRotate -= PlayerInputHelper_OnRotate;
         GameGrid.OnRowsHandled -= GameGrid_OnRowsHandled;
         ScoreManager.OnLevelUp -= ScoreManager_OnLevelUp;
+        IAPManager.OnPremiumPurchase -= IAPManager_OnPremiumPurchase;
     }
     private void Start()
     {
@@ -83,6 +85,10 @@ public class GameManager : MonoBehaviour
         UnpauseGame();
         settingsPanel.Hide();
     }
+    private void IAPManager_OnPremiumPurchase()
+    {
+        CloseRemoveAdsPanel();
+    }
     public void OpenRemoveAdsPanel()
     {
         PauseGame();
@@ -95,7 +101,7 @@ public class GameManager : MonoBehaviour
     }
     public void ResumeFromHalf()
     {
-        AdsManager.Instance.WathcAd(
+        AdsManager.Instance.ShowRewardedAd(
             onSuccess: () =>
             {
                 CloseGameOverPanel();
@@ -121,7 +127,7 @@ public class GameManager : MonoBehaviour
     }
     public void RestartLevel()
     {
-        AdsManager.Instance.PopupAdd(() => SceneLoader.StartLoadScene(SceneManager.GetActiveScene().name));
+        AdsManager.Instance.ShowInterstitialAd(() => SceneLoader.StartLoadScene(SceneManager.GetActiveScene().name));
     }
     private void SpawnTetrisBlock()
     {

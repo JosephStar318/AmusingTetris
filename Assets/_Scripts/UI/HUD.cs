@@ -14,11 +14,14 @@ public class HUD : MonoBehaviour
     {
         GameGrid.OnPreviewChanged += GameGrid_OnPreviewChanged;
         SettingsPanel.OnModeChanged += SettingsPanel_OnModeChanged;
+        IAPManager.OnPremiumPurchase += IAPManager_OnPremiumPurchase;
     }
+
     private void OnDisable()
     {
         GameGrid.OnPreviewChanged -= GameGrid_OnPreviewChanged;
         SettingsPanel.OnModeChanged -= SettingsPanel_OnModeChanged;
+        IAPManager.OnPremiumPurchase -= IAPManager_OnPremiumPurchase;
     }
     private void Start()
     {
@@ -41,5 +44,10 @@ public class HUD : MonoBehaviour
             classicControls.SetActive(false);
             modernControls.SetActive(true);
         }
+    }
+
+    private void IAPManager_OnPremiumPurchase()
+    {
+        removeAdsBtn.SetActive(false);
     }
 }
