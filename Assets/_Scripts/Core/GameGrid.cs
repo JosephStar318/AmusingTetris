@@ -22,7 +22,6 @@ public class GameGrid : MonoBehaviour
     [SerializeField] public TetrisBlocksSO tetrisBlocks;
     [SerializeField] private LayerMask blockLayer;
 
-    private Color previewBlockColor;
     private TetrisBlock previewBlock;
 
     private Vector2[,] gridCoords;
@@ -31,8 +30,6 @@ public class GameGrid : MonoBehaviour
     public float CellWidth => cellWidth;
     public float CellHeight => cellHeight;
 
-    [SerializeField] private AnimationCurve fallingBlockCurve;
-    private float fallingBlockCurveIndex;
     private void Start()
     {
         SetupGrid();
@@ -300,40 +297,6 @@ public class GameGrid : MonoBehaviour
         yield return null;
         OnRowsHandled?.Invoke();
     }
-
-    //private void ShiftBlocksBy(List<List<Transform>> completedRowList, int rowIndex)
-    //{
-    //    Vector2 pointA = GetPositionFromIndexVector(new Vector2Int(0, rowIndex + 1));
-    //    Vector2 pointB = GetPositionFromIndexVector(new Vector2Int(cellSizeX - 1, cellSizeY - 1));
-    //    Collider2D[] allBlocks = Physics2D.OverlapAreaAll(pointA, pointB);
-    //    List<Vector2> blockDestinations = new List<Vector2>(allBlocks.Length);
-
-    //    foreach (Collider2D coll in allBlocks)
-    //    {
-    //        Vector2 destination = (Vector2)coll.transform.position + Vector2.down * cellHeight * completedRowList.Count;
-    //        blockDestinations.Add(destination);
-    //    }
-
-    //    StartCoroutine(FallBlocks(allBlocks, blockDestinations, () => OnRowsHandled?.Invoke()));
-    //}
-
-    //private IEnumerator FallBlocks(Collider2D[] allBlocks, List<Vector2> blockDestinations, Action callback)
-    //{
-    //    while (fallingBlockCurveIndex < 1)
-    //    {
-    //        fallingBlockCurveIndex += Time.fixedDeltaTime * 3f;
-    //        fallingBlockCurveIndex = Mathf.Clamp(fallingBlockCurveIndex, 0, 1);
-
-    //        for (int i = 0; i < allBlocks.Length; i++)
-    //        {
-    //            allBlocks[i].transform.position = Vector2.Lerp(allBlocks[i].transform.position, blockDestinations[i], fallingBlockCurve.Evaluate(fallingBlockCurveIndex));
-    //        }
-
-    //        yield return new WaitForFixedUpdate();
-    //    }
-    //    fallingBlockCurveIndex = 0;
-    //    callback.Invoke();
-    //}
 
     private void DestroyRow(List<Transform> resultList)
     {

@@ -337,7 +337,6 @@ MonoBehaviour:
   removeAdsPanel: {fileID: 980975118}
   gameOverPanel: {fileID: 2032369100}
   verticalSpeed: 1.5
-  horizontalSpeed: 1
   moveSound: {fileID: 8300000, guid: e39ab2640ab7d504ea4d0d342a66c412, type: 3}
 --- !u!114 &167694823
 MonoBehaviour:
@@ -571,6 +570,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: c2e2d3489a4bf7042a1aed3f94220d4d, type: 3}
   levelUpSfx: {fileID: 8300000, guid: 50787b3819bfd42418bdab27a9c6bf15, type: 3}
   tetrisSfx: {fileID: 8300000, guid: b2e57fcea81ed0b46a6ae9d34236f40e, type: 3}
+  moveSound: {fileID: 8300000, guid: e39ab2640ab7d504ea4d0d342a66c412, type: 3}
 --- !u!114 &167694832
 MonoBehaviour:
   m_ObjectHideFlags: 0

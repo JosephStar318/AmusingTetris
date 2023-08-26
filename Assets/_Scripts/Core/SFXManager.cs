@@ -8,16 +8,19 @@ public class SFXManager : MonoBehaviour
     [SerializeField] private List<AudioClip> breakSfx;
     [SerializeField] private AudioClip levelUpSfx;
     [SerializeField] private AudioClip tetrisSfx;
+    [SerializeField] private AudioClip moveSound;
 
     private void OnEnable()
     {
         GameManager.OnBlockGrounded += GameManager_OnBlockGrounded;
+        GameManager.OnBlockMoved += GameManager_OnBlockMoved;
         GameGrid.OnBeforeRowsCleared += GameGrid_OnBeforeRowsCleared;
         ScoreManager.OnLevelUp += ScoreManager_OnLevelUp;
     }
     private void OnDisable()
     {
         GameManager.OnBlockGrounded -= GameManager_OnBlockGrounded;
+        GameManager.OnBlockMoved -= GameManager_OnBlockMoved;
         GameGrid.OnBeforeRowsCleared -= GameGrid_OnBeforeRowsCleared;
         ScoreManager.OnLevelUp -= ScoreManager_OnLevelUp;
     }
@@ -36,5 +39,9 @@ public class SFXManager : MonoBehaviour
     private void GameManager_OnBlockGrounded(TetrisBlock block)
     {
         AudioUtility.CreateSFXRandom(groundedSfx, block.transform.position, AudioUtility.AudioGroups.SFX, 0.8f);
+    }
+    private void GameManager_OnBlockMoved(TetrisBlock block)
+    {
+        AudioUtility.CreateSFX(moveSound, block.transform.position, AudioUtility.AudioGroups.SFX, 0.8f);
     }
 }

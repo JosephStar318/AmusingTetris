@@ -16,8 +16,8 @@ public class AdsManager : MonoBehaviour
     private RewardedAd rewardedAd;
     private InterstitialAd interstitialAd;
 
-    [SerializeField] private string adUnitIdInterstitial = "ca-app-pub-3940256099942544/1033173712";
-    [SerializeField] private string adUnitIdRewarded = "ca-app-pub-3940256099942544/5224354917";
+    [SerializeField] private string adUnitIdInterstitial = "ca-app-pub-1229677241121323/8094694660";
+    [SerializeField] private string adUnitIdRewarded = "ca-app-pub-1229677241121323/3057727076";
 
     private bool _premium = false;
     private Action onAfterInterstitialAdd;
@@ -53,8 +53,8 @@ public class AdsManager : MonoBehaviour
 
         MobileAds.Initialize((initStatus) =>
         {
-            LoadRewardedAdd();
             LoadInterstitialAdd();
+            LoadRewardedAdd();
         });
     }
     public void LoadInterstitialAdd()
@@ -70,6 +70,7 @@ public class AdsManager : MonoBehaviour
         {
             return;
         }
+        Debug.Log("Loading the interstitial ad.");
 
         var adRequest = new AdRequest();
 
@@ -123,6 +124,7 @@ public class AdsManager : MonoBehaviour
                           + ad.GetResponseInfo());
 
                 rewardedAd = ad;
+                Debug.Log("rewarded ad loaded");
             });
 
             RegisterEventHandlers(rewardedAd);
@@ -219,8 +221,8 @@ public class AdsManager : MonoBehaviour
         }
         else
         {
-            callback.Invoke();
             Debug.LogError("Interstitial ad is not ready yet.");
+            callback.Invoke();
         }
     }
 
@@ -232,12 +234,12 @@ public class AdsManager : MonoBehaviour
             rewardedAd.Show((Reward reward) =>
             {
                 optionalAdsCounter++;
-                Debug.Log("Watching Ads");
+                Debug.Log("Showing rewarded add.");
 
                 if (optionalAdsCounter >= maxOptionalAdsCount)
                 {
-                    OnOptionalLimitReached?.Invoke();
                     Debug.Log("OptionalAds Limit reached.");
+                    OnOptionalLimitReached?.Invoke();
                 }
                 onSuccess.Invoke();
             });
