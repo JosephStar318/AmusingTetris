@@ -74,12 +74,16 @@ public class GameGrid : MonoBehaviour
 
         if (RotationIsPossible(block, rotatedBlockIndexList) == false) return;
 
+        Vector2Int pivotIndexVector = GetIndexFromPosition(block.transform.position);
+        block.transform.position = GetPositionFromIndexVector(pivotIndexVector + new Vector2Int(-blockOffset, 0));
+
         int childIndex = 0;
         foreach (Transform child in block.transform)
         {
             Vector2Int indexVector = rotatedBlockIndexList[childIndex++];
             child.position = GetPositionFromIndexVector(indexVector);
         }
+      
     }
 
     private bool RotationIsPossible(TetrisBlock block, List<Vector2Int> rotatedBlockIndexList)

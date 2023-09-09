@@ -91,8 +91,8 @@ public class AdsManager : MonoBehaviour
                           + ad.GetResponseInfo());
 
                 interstitialAd = ad;
+                RegisterEventHandlers(interstitialAd);
             });
-            RegisterEventHandlers(interstitialAd);
     }
     public void LoadRewardedAdd()
     {
@@ -123,11 +123,11 @@ public class AdsManager : MonoBehaviour
                 Debug.Log("Rewarded ad loaded with response : "
                           + ad.GetResponseInfo());
 
-                rewardedAd = ad;
                 Debug.Log("rewarded ad loaded");
+                rewardedAd = ad;
+                RegisterEventHandlers(rewardedAd);
             });
 
-            RegisterEventHandlers(rewardedAd);
 
     }
     private void RegisterEventHandlers(InterstitialAd ad)
